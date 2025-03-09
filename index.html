@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-    <h2>CALCULATOR IDR/PI (OKX-4)</h2>
+    <h2>CALCULATOR IDR/PI (OKX-5)</h2>
     <p>Masukkan jumlah Rupiah:</p>
     <input type="number" id="rupiah" placeholder="Masukkan Rupiah">
     <button id="convertBtn">Konversi</button>
@@ -34,32 +34,57 @@
             document.getElementById("convertBtn").addEventListener("click", convert);
         });
 
+        // ✅ Fungsi untuk mengambil harga Pi dari OKX
         async function getPiPrice() {
             try {
                 const response = await fetch('https://www.okx.com/api/v5/market/ticker?instId=PI-USDT');
                 const data = await response.json();
-                if (!data.data || data.data.length === 0) throw new Error("Data harga Pi tidak tersedia.");
+
+                console.log("Data OKX:", data); // Debugging
+
+                if (!data.data || data.data.length === 0) {
+                    throw new Error("Harga Pi tidak ditemukan.");
+                }
+
                 return parseFloat(data.data[0].last); // Harga Pi dalam USDT
             } catch (error) {
-                console.error('Error fetching Pi price:', error);
+                console.error('Error mengambil harga Pi:', error);
                 return null;
             }
         }
 
+        // ✅ Fungsi untuk mengambil kurs USD ke IDR
         async function getUsdToIdrRate() {
-    try {
-        const response = await fetch('https://open.er-api.com/v6/latest/USD');
-        const data = await response.json();
-        if (!data.rates || !data.rates.IDR) throw new Error("Data nilai tukar tidak tersedia.");
-        return data.rates.IDR; 
-    } catch (error) {
-        console.error('Error fetching exchange rate:', error);
-        return null;
-       }
-    }
+            try {
+                // Coba API pertama
+                let response = await fetch('https://open.er-api.com/v6/latest/USD');
+                let data = await response.json();
+                
+                console.log("Data Exchange Rate:", data); // Debugging
 
+                if (data.rates && data.rates.IDR) {
+                    return data.rates.IDR;
+                }
+
+                // Jika API pertama gagal, coba API kedua
+                response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                data = await response.json();
+                
+                if (data.rates && data.rates.IDR) {
+                    return data.rates.IDR;
+                }
+
+                throw new Error("Nilai tukar tidak ditemukan.");
+            } catch (error) {
+                console.error('Error mengambil kurs USD ke IDR:', error);
+                return null;
+            }
+        }
+
+        // ✅ Fungsi untuk mengonversi IDR ke koin Pi
         async function convert() {
             const rupiah = parseFloat(document.getElementById("rupiah").value);
+            
             if (isNaN(rupiah) || rupiah <= 0) {
                 alert("Masukkan jumlah Rupiah yang valid!");
                 return;
@@ -67,18 +92,24 @@
 
             document.getElementById("result").innerText = "Menghitung...";
 
+            // Ambil harga Pi di OKX & kurs USD ke IDR
             const piPrice = await getPiPrice();
             const usdToIdr = await getUsdToIdrRate();
 
-            if (!piPrice || !usdToIdr) {
-                document.getElementById("result").innerText = "Gagal mengambil data harga. Coba lagi nanti.";
+            if (!piPrice) {
+                document.getElementById("result").innerText = "Gagal mengambil harga Pi dari OKX. Coba lagi.";
                 return;
             }
 
-            const piToIdr = piPrice * usdToIdr; // Harga 1 Pi dalam Rupiah
+            if (!usdToIdr) {
+                document.getElementById("result").innerText = "Gagal mengambil nilai tukar USD ke IDR. Coba lagi.";
+                return;
+            }
+
+            const piToIdr = piPrice * usdToIdr; // Harga 1 Pi dalam IDR
             const piAmount = rupiah / piToIdr;
 
-            document.getElementById("result").innerText = '≈ ${piAmount.toFixed(4)} koin Pi';
+            document.getElementById("result").innerText = `≈ ${piAmount.toFixed(4)} koin Pi`;
         }
     </script>
 </body>
