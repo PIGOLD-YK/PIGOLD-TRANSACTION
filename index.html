@@ -25,10 +25,10 @@
     <h2>CALCULATOR IDR/PI (OKX)</h2>
 
     <p><strong>1 Pi by OKX:</strong> <span id="hargaPi">Memuat...</span> IDR</p>
-    <p><strong>Harga Beli 1 Pi:</strong> <span id="hargaPiMarkup">Memuat...</span> IDR (Setelah Markup 25%)</p>
+    <p><strong>1 Pi PIGOLD:</strong> <span id="hargaPiMarkup">Memuat...</span> IDR </p>
 
-    <p>Masukkan jumlah Rupiah:</p>
-    <input type="number" id="rupiah" placeholder="Masukkan Rupiah">
+    <p>Harga barang (Rp):</p>
+    <input type="number" id="rupiah" placeholder="Masukkan harga barang dalam rupiah">
     <button id="convertBtn">Konversi</button>
     
     <p id="result"></p>
@@ -50,7 +50,7 @@
             }
 
             const piToIdr = piPrice * usdToIdr;
-            const piMarkup = piToIdr * 0.75; // Harga setelah dikurangi 25%
+            const piMarkup = piToIdr * 0.8; // Harga setelah dikurangi 20%
 
             document.getElementById("hargaPi").innerText = piToIdr.toLocaleString("id-ID");
             document.getElementById("hargaPiMarkup").innerText = piMarkup.toLocaleString("id-ID");
@@ -114,7 +114,7 @@
             }
 
             const piToIdr = piPrice * usdToIdr;
-            const piMarkup = piToIdr * 0.75; // Harga setelah dikurangi 25%
+            const piMarkup = piToIdr * 0.8; // Harga setelah dikurangi 20%
             const piAmount = rupiah / piMarkup;
 
             document.getElementById("result").innerText = `≈ ${piAmount.toFixed(4)} koin Pi`;
