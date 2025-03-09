@@ -29,6 +29,7 @@
 <body>
     <h2>KALKULATOR IDR/PI (OKX)</h2>
     <p><b>1 Pi ≈ <span id="hargaPi">Mengambil data...</span> IDR</b></p>
+    <p>USD to IDR: <b><span id="kursUsdIdr">Mengambil data...</span></b></p>
     
     <label>Masukkan jumlah Rupiah:</label><br>
     <input type="number" id="rupiah" placeholder="Masukkan jumlah rupiah">
@@ -41,22 +42,22 @@
     </div>
 
     <script>
-        let hargaPiGlobal = null; // Menyimpan harga Pi agar bisa digunakan dalam konversi
+        let hargaPiGlobal = null;
+        let kursUsdIdrGlobal = null;
 
         async function fetchPrice() {
             try {
-                const response = await fetch("https://www.okx.com/api/v5/market/ticker?instId=PI-USDT");
+                const response = await fetch("http://localhost:3000/harga-pi"); 
                 const data = await response.json();
-                const priceInUSDT = parseFloat(data.data[0].last); // Mengambil harga PI dalam USDT
-                
-                // Konversi harga Pi dari USDT ke IDR (dengan asumsi 1 USDT = 15.500 IDR)
-                const hargaPi = priceInUSDT * 15500; 
-                hargaPiGlobal = hargaPi; // Simpan untuk digunakan dalam konversi
-                
-                document.getElementById("hargaPi").innerText = hargaPi.toLocaleString("id-ID");
+                hargaPiGlobal = data.hargaPi; 
+                kursUsdIdrGlobal = data.usdToIdr;
+
+                document.getElementById("hargaPi").innerText = hargaPiGlobal.toLocaleString("id-ID");
+                document.getElementById("kursUsdIdr").innerText = kursUsdIdrGlobal.toLocaleString("id-ID");
             } catch (error) {
                 console.error("Gagal mengambil harga:", error);
                 document.getElementById("hargaPi").innerText = "Gagal memuat";
+                document.getElementById("kursUsdIdr").innerText = "Gagal memuat";
             }
         }
 
@@ -73,13 +74,13 @@
             }
 
             const hasilPi = rupiah / hargaPiGlobal;
-            const nilaiJual = hasilPi * 1.25; // Ditambah 25%
+            const nilaiJual = hasilPi * 1.25; 
 
             document.getElementById("hasilPi").innerText = hasilPi.toFixed(4);
             document.getElementById("nilaiJual").innerText = nilaiJual.toFixed(4);
         }
 
-        fetchPrice(); // Panggil saat halaman pertama kali dibuka
+        fetchPrice();
     </script>
 </body>
 </html>
