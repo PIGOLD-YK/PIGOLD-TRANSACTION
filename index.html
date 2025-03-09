@@ -30,7 +30,9 @@
     <p id="result"></p>
     
     <script>
-        document.getElementById("convertBtn").addEventListener("click", convert);
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("convertBtn").addEventListener("click", convert);
+        });
 
         async function getPiPrice() {
             try {
