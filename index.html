@@ -22,12 +22,12 @@
     </style>
 </head>
 <body>
-    <h2> - PIGOLD TRANSACTION - </h2>
-
-    <p><strong>1 Pi by OKX: Rp. </strong> <span id="hargaPi">Memuat...</span> </p>
-    <p><strong>1 Pi PIGOLD: Rp. </strong> <span id="hargaPiMarkup">Memuat...</span> </p>
+    <h2>PIGOLD TRANSACTION</h2>
     
-    <p><strong>___________________________________________________</strong></p>
+    <p><strong>_______________________________________</strong></p>
+    <p><strong> [OKX] 1 π : Rp. </strong> <span id="hargaPi">Memuat...</span> </p>
+    <p><strong> [PIGOLD] 1 π : Rp. </strong> <span id="hargaPiMarkup">Memuat...</span> </p>
+    <p><strong>_______________________________________</strong></p>
     
     <p>Harga jual (Rp):</p>
     <input type="number" id="rupiah" placeholder="Masukkan harga transaksi">
@@ -119,7 +119,7 @@
             const piMarkup = piToIdr * 0.8; // Harga setelah dikurangi 20%
             const piAmount = rupiah / piMarkup;
 
-            document.getElementById("result").innerText = `≈ ${piAmount.toFixed(4)} koin Pi`;
+            document.getElementById("result").innerText = `<strong> ${piAmount.toFixed(4)} π </strong>`;
         }
     </script>
 </body>
