@@ -32,8 +32,8 @@
     <p>Harga jual (Rp):</p>
     <input type="number" id="rupiah" placeholder="Masukkan harga transaksi">
     <button id="convertBtn">Konversi</button>
-    
-    <p id="result"><strong></strong></p>
+    <p>Harga π :</p>
+    <strong><p id="result"></p></strong>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -119,7 +119,7 @@
             const piMarkup = piToIdr * 0.8; // Harga setelah dikurangi 20%
             const piAmount = rupiah / piMarkup;
 
-            document.getElementById("result").innerText = `<strong> ${piAmount.toFixed(4)} π </strong>`;
+            document.getElementById("result").innerText = `${piAmount.toFixed(4)} π`;
         }
     </script>
 </body>
