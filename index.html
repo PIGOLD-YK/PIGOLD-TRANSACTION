@@ -3,61 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator Konversi IDR/PI (OKX)</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
-        }
-        input {
-            padding: 10px;
-            width: 200px;
-            margin: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .result {
-            margin-top: 20px;
-            font-size: 18px;
-        }
-    </style>
+    <title>Calculator IDR/PI (OKX)</title>
 </head>
 <body>
-    <h2>KALKULATOR IDR/PI (OKX)</h2>
-    <p><b>1 Pi ≈ <span id="hargaPi">Mengambil data...</span> IDR</b></p>
-    <p>USD to IDR: <b><span id="kursUsdIdr">Mengambil data...</span></b></p>
-    
-    <label>Masukkan jumlah Rupiah:</label><br>
+    <h2>CALCULATOR IDR/PI (OKX)</h2>
+    <p>by Donald Gaspersz</p>
+    <label>Masukkan jumlah Rupiah:</label>
     <input type="number" id="rupiah" placeholder="Masukkan jumlah rupiah">
-    <br><br>
     <button onclick="konversi()">Konversi</button>
-
-    <div class="result">
-        <p>≈ <b><span id="hasilPi">0</span></b> koin Pi</p>
-        <p>Nilai Pi setelah markup 25%: <b><span id="nilaiJual">0</span></b> koin Pi</p>
-    </div>
+    
+    <p>≈ <span id="hasilPi">0</span> koin Pi</p>
+    <p><b>Nilai Jual (dalam koin Pi):</b> ≈ <span id="nilaiJual">0</span> koin Pi</p>
 
     <script>
-        let hargaPiGlobal = null;
-        let kursUsdIdrGlobal = null;
-
         async function fetchPrice() {
             try {
-                const response = await fetch("http://localhost:3000/harga-pi"); 
+                const response = await fetch("https://namaproject.render.com/api/price"); // Ganti dengan URL backend jika sudah online
                 const data = await response.json();
-                hargaPiGlobal = data.hargaPi; 
-                kursUsdIdrGlobal = data.usdToIdr;
-
-                document.getElementById("hargaPi").innerText = hargaPiGlobal.toLocaleString("id-ID");
-                document.getElementById("kursUsdIdr").innerText = kursUsdIdrGlobal.toLocaleString("id-ID");
+                return parseFloat(data.price); // Mengambil harga PI dalam USDT
             } catch (error) {
                 console.error("Gagal mengambil harga:", error);
-                document.getElementById("hargaPi").innerText = "Gagal memuat";
-                document.getElementById("kursUsdIdr").innerText = "Gagal memuat";
+                return null;
             }
         }
 
@@ -68,19 +34,18 @@
                 return;
             }
 
-            if (!hargaPiGlobal) {
+            const pricePi = await fetchPrice();
+            if (!pricePi) {
                 alert("Gagal mengambil harga Pi dari server!");
                 return;
             }
 
-            const hasilPi = rupiah / hargaPiGlobal;
-            const nilaiJual = hasilPi * 1.25; 
+            const hasilPi = rupiah / pricePi;
+            const nilaiJual = hasilPi * 1.25; // Ditambah 25%
 
             document.getElementById("hasilPi").innerText = hasilPi.toFixed(4);
             document.getElementById("nilaiJual").innerText = nilaiJual.toFixed(4);
         }
-
-        fetchPrice();
     </script>
 </body>
 </html>
