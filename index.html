@@ -31,15 +31,20 @@
     <p><strong>_______________________________________</strong></p>
     
     <p>Harga jual (Rp):</p>
-    <input type="number" id="rupiah" onblur="formatRupiahOnBlur(this)">
- placeholder="Masukkan harga transaksi">
+    <input type="number" id="rupiah" onblur="formatRupiahOnBlur(this)" placeholder="Masukkan harga transaksi">
     <button id="convertBtn">Konversi</button>
     <p><strong>_______________________________________</strong></p>
     <p>Harga Pi :</p>
     <strong><p id="result"></p></strong>
     <p><i></u>Nilai realtime berdasar OKX</i></p>
     <p><i></u>Terimakasih</i></p>
+    
     <script>
+    function formatRupiahOnBlur(input) {
+        let value = input.value;
+        input.value = new Intl.NumberFormat('id-ID').format(value);
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             fetchPrices();
             document.getElementById("convertBtn").addEventListener("click", convert);
