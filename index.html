@@ -40,11 +40,6 @@
     <p><i></u>Terimakasih</i></p>
     
     <script>
-    function formatRupiahOnBlur(input) {
-        let value = input.value;
-        input.value = new Intl.NumberFormat('id-ID').format(value);
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
             fetchPrices();
             document.getElementById("convertBtn").addEventListener("click", convert);
