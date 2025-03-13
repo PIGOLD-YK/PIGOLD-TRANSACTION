@@ -31,7 +31,8 @@
     <p><strong>_______________________________________</strong></p>
     
     <p>Harga jual (Rp):</p>
-    <input type="number" id="rupiah" placeholder="Masukkan harga transaksi">
+    <input type="number" id="rupiah" onblur="formatRupiahOnBlur(this)">
+ placeholder="Masukkan harga transaksi">
     <button id="convertBtn">Konversi</button>
     <p><strong>_______________________________________</strong></p>
     <p>Harga Pi :</p>
