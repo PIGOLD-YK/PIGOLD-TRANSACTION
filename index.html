@@ -56,7 +56,7 @@
             }
 
             const piToIdr = piPrice * usdToIdr;
-            const piMarkup = piToIdr * 0.90; // Harga setelah dikurangi 10%
+            const piMarkup = piToIdr * 0.92; // Harga setelah dikurangi 10%
 
             document.getElementById("hargaPi").innerText = piToIdr.toLocaleString("id-ID");
             document.getElementById("hargaPiMarkup").innerText = piMarkup.toLocaleString("id-ID");
@@ -120,7 +120,7 @@
             }
 
             const piToIdr = piPrice * usdToIdr;
-            const piMarkup = piToIdr * 0.90; // Harga setelah dikurangi 10%
+            const piMarkup = piToIdr * 0.92; // Harga setelah dikurangi 10%
             const piAmount = rupiah / piMarkup;
 
             document.getElementById("result").innerText = `${piAmount.toFixed(4)} Pi`;
