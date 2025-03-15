@@ -31,10 +31,10 @@
     <p>
         <strong>Pilih Tipe Member:</strong><br>
         <input type="radio" id="reguler" name="member" value="reguler" checked>
-        <label for="reguler">Non Member</label>
+        <label for="reguler">Reguler (-10%)</label>
         
         <input type="radio" id="vip" name="member" value="vip">
-        <label for="vip">VIP Member</label>
+        <label for="vip">VIP (-8%)</label>
     </p>
     
     <p><strong> [PI-DAY] 1 Pi : Rp. </strong> <span id="hargaPiMarkup">Memuat...</span> </p>
@@ -60,23 +60,28 @@
         });
 
         async function fetchPrices() {
-            const piPrice = await getPiPrice();
-            const usdToIdr = await getUsdToIdrRate();
+            try {
+                const piPrice = await getPiPrice();
+                const usdToIdr = await getUsdToIdrRate();
 
-            if (!piPrice || !usdToIdr) {
+                if (!piPrice || !usdToIdr) {
+                    throw new Error("Gagal memuat data harga.");
+                }
+
+                const piToIdr = piPrice * usdToIdr;
+                document.getElementById("hargaPi").innerText = piToIdr.toLocaleString("id-ID");
+
+                updatePriceMarkup(); // Update harga berdasarkan tipe member
+            } catch (error) {
+                console.error(error);
                 document.getElementById("hargaPi").innerText = "Gagal memuat";
                 document.getElementById("hargaPiMarkup").innerText = "Gagal memuat";
-                return;
             }
-
-            const piToIdr = piPrice * usdToIdr;
-            document.getElementById("hargaPi").innerText = piToIdr.toLocaleString("id-ID");
-
-            updatePriceMarkup(); // Update harga berdasarkan tipe member
         }
 
         function updatePriceMarkup() {
-            const piToIdr = parseFloat(document.getElementById("hargaPi").innerText.replace(/\./g, "").replace(",", "."));
+            const hargaPiText = document.getElementById("hargaPi").innerText.replace(/\./g, "").replace(",", ".");
+            const piToIdr = parseFloat(hargaPiText);
             if (isNaN(piToIdr)) return;
 
             const memberType = document.querySelector('input[name="member"]:checked').value;
@@ -106,25 +111,16 @@
 
         async function getUsdToIdrRate() {
             try {
-                let response = await fetch('https://open.er-api.com/v6/latest/USD');
-                let data = await response.json();
+                const response = await fetch('https://open.er-api.com/v6/latest/USD');
+                const data = await response.json();
 
-                console.log("Data kurs USD-IDR dari API 1:", data);
-
-                if (data.rates && data.rates.IDR) {
-                    return data.rates.IDR;
-                }
-
-                response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-                data = await response.json();
-
-                console.log("Data kurs USD-IDR dari API 2:", data);
+                console.log("Data kurs USD-IDR:", data);
 
                 if (data.rates && data.rates.IDR) {
                     return data.rates.IDR;
+                } else {
+                    throw new Error("Nilai tukar tidak ditemukan.");
                 }
-
-                throw new Error("Nilai tukar tidak ditemukan.");
             } catch (error) {
                 console.error('Error mengambil kurs USD ke IDR:', error);
                 return null;
@@ -141,21 +137,25 @@
 
             document.getElementById("result").innerText = "Menghitung...";
 
-            const piPrice = await getPiPrice();
-            const usdToIdr = await getUsdToIdrRate();
+            try {
+                const piPrice = await getPiPrice();
+                const usdToIdr = await getUsdToIdrRate();
 
-            if (!piPrice || !usdToIdr) {
-                document.getElementById("result").innerText = "Gagal mengambil data harga. Coba lagi.";
-                return;
+                if (!piPrice || !usdToIdr) {
+                    throw new Error("Gagal mengambil data harga.");
+                }
+
+                const piToIdr = piPrice * usdToIdr;
+                const memberType = document.querySelector('input[name="member"]:checked').value;
+                const discount = memberType === "vip" ? 0.92 : 0.90; // VIP -8%, Reguler -10%
+                const piMarkup = piToIdr * discount;
+                const piAmount = rupiah / piMarkup;
+
+                document.getElementById("result").innerText = ${piAmount.toFixed(4)} Pi;
+            } catch (error) {
+                console.error(error);
+                document.getElementById("result").innerText = "Gagal menghitung";
             }
-
-            const piToIdr = piPrice * usdToIdr;
-            const memberType = document.querySelector('input[name="member"]:checked').value;
-            const discount = memberType === "vip" ? 0.92 : 0.90; // VIP -8%, Reguler -10%
-            const piMarkup = piToIdr * discount;
-            const piAmount = rupiah / piMarkup;
-
-            document.getElementById("result").innerText = ${piAmount.toFixed(4)} Pi;
         }
     </script>
 </body>
