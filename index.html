@@ -25,24 +25,38 @@
 <body>
     <h2>PI-DAY TRANSACTION</h2>
     
-    <p><strong>_______________________________________</strong></p>
+    <p><strong>_____________</strong></p>
     <p><strong> [OKX] 1 Pi : Rp. </strong> <span id="hargaPi">Memuat...</span> </p>
+    
+    <p>
+        <strong>Pilih Tipe Member:</strong><br>
+        <input type="radio" id="reguler" name="member" value="reguler" checked>
+        <label for="reguler">Reguler (-10%)</label>
+        
+        <input type="radio" id="vip" name="member" value="vip">
+        <label for="vip">VIP (-8%)</label>
+    </p>
+    
     <p><strong> [PI-DAY] 1 Pi : Rp. </strong> <span id="hargaPiMarkup">Memuat...</span> </p>
-    <p><strong>_______________________________________</strong></p>
+    <p><strong>_____________</strong></p>
     
     <p>Harga jual (Rp):</p>
-    <input type="number" id="rupiah" onblur="formatRupiahOnBlur(this)" placeholder="Masukkan harga transaksi">
+    <input type="number" id="rupiah" placeholder="Masukkan harga transaksi">
     <button id="convertBtn">Konversi</button>
-    <p><strong>_______________________________________</strong></p>
+    <p><strong>_____________</strong></p>
+    
     <p>Harga Pi :</p>
     <strong><p id="result"></p></strong>
-    <p><i></u>Nilai realtime berdasar OKX</i></p>
-    <p><i></u>Terimakasih</i></p>
+    <p><i>Nilai realtime berdasar OKX</i></p>
+    <p><i>Terimakasih</i></p>
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             fetchPrices();
             document.getElementById("convertBtn").addEventListener("click", convert);
+            document.querySelectorAll('input[name="member"]').forEach((radio) => {
+                radio.addEventListener("change", updatePriceMarkup);
+            });
         });
 
         async function fetchPrices() {
@@ -56,9 +70,19 @@
             }
 
             const piToIdr = piPrice * usdToIdr;
-            const piMarkup = piToIdr * 0.92; // Harga setelah dikurangi 10%
-
             document.getElementById("hargaPi").innerText = piToIdr.toLocaleString("id-ID");
+
+            updatePriceMarkup(); // Update harga berdasarkan tipe member
+        }
+
+        function updatePriceMarkup() {
+            const piToIdr = parseFloat(document.getElementById("hargaPi").innerText.replace(/\./g, "").replace(",", "."));
+            if (isNaN(piToIdr)) return;
+
+            const memberType = document.querySelector('input[name="member"]:checked').value;
+            const discount = memberType === "vip" ? 0.92 : 0.90; // VIP -8%, Reguler -10%
+            const piMarkup = piToIdr * discount;
+
             document.getElementById("hargaPiMarkup").innerText = piMarkup.toLocaleString("id-ID");
         }
 
@@ -120,10 +144,12 @@
             }
 
             const piToIdr = piPrice * usdToIdr;
-            const piMarkup = piToIdr * 0.92; // Harga setelah dikurangi 10%
+            const memberType = document.querySelector('input[name="member"]:checked').value;
+            const discount = memberType === "vip" ? 0.92 : 0.90; // VIP -8%, Reguler -10%
+            const piMarkup = piToIdr * discount;
             const piAmount = rupiah / piMarkup;
 
-            document.getElementById("result").innerText = `${piAmount.toFixed(4)} Pi`;
+            document.getElementById("result").innerText = ${piAmount.toFixed(4)} Pi;
         }
     </script>
 </body>
