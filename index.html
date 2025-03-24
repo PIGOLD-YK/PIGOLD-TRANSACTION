@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIGOLD TRANSACTION CONVERTER 2</title>
+    <title>PIGOLD TRANSACTION CONVERTER</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,12 +20,24 @@
             font-size: 16px;
             margin-top: 10px;
         }
-        .logo {
-            margin-top: 4px;
+        .logo { margin-top: 4px; }
+        .logo img { width: 100px; height: auto; }
+        .form-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #000;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            width: 250px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .logo img {
-            width: 100px;
-            height: auto;
+        .form-link:hover {
+            background-color: #333;
         }
     </style>
 </head>
@@ -42,10 +54,10 @@
     
     <input type="radio" id="vip" name="member" value="vip">
     <label for="vip"><strong>VIP MEMBER</strong></label>
-    
+
     <strong>_____________________________________</strong>
     <p><strong> [OKX] 1 Pi : Rp. </strong> <span id="hargaPi">Memuat...</span></p>
-    <p><strong> [PI-DAY] 1 Pi : Rp. </strong> <span id="hargaPiMarkup">Memuat...</span></p>
+    <strong> [PI-DAY] 1 Pi : Rp. </strong> <span id="hargaPiMarkup">Memuat...</span>
     <strong>_____________________________________</strong>
     
     <p><strong>Harga (Rp):</strong></p>
@@ -54,15 +66,17 @@
     
     <p><strong>Harga (Pi) :</strong></p>
     <h1><p id="result"></p></h1>
-    
+
+    <strong>_____________________________________</strong>
+
+    <a href="https://forms.gle/Aet7d4ZK7aeUrQK28" class="form-link" target="_blank">Lanjut ke Pengisian Data</a>
+
     <strong>_____________________________________</strong>
     <i>Nilai realtime berdasar OKX</i>
-    <i>Terima kasih</i>
+    <i>Terimakasih</i>
 
     <script>
-        let latestPiToIdr = null; // Menyimpan harga terakhir agar tetap bisa digunakan jika API gagal
-        const defaultPiPrice = 0.3; // Default jika API gagal
-        const defaultUsdToIdr = 16000; // Default kurs USD ke IDR jika API gagal
+        let latestPiToIdr = null;
 
         document.addEventListener("DOMContentLoaded", function() {
             fetchPrices();
@@ -77,11 +91,15 @@
                 const piPrice = await getPiPrice();
                 const usdToIdr = await getUsdToIdrRate();
 
-                const piToIdr = (piPrice || defaultPiPrice) * (usdToIdr || defaultUsdToIdr);
-                latestPiToIdr = piToIdr; // Simpan harga terakhir yang berhasil dimuat
+                if (!piPrice || !usdToIdr) {
+                    throw new Error("Gagal memuat data harga.");
+                }
+
+                const piToIdr = piPrice * usdToIdr;
+                latestPiToIdr = piToIdr;
                 document.getElementById("hargaPi").innerText = piToIdr.toLocaleString("id-ID");
 
-                updatePriceMarkup(); // Update harga berdasarkan tipe member
+                updatePriceMarkup();
             } catch (error) {
                 console.error(error);
                 document.getElementById("hargaPi").innerText = "Gagal memuat";
@@ -93,7 +111,7 @@
             if (!latestPiToIdr) return;
 
             const memberType = document.querySelector('input[name="member"]:checked').value;
-            const discount = memberType === "vip" ? 0.92 : 0.90; // VIP -8%, Reguler -10%
+            const discount = memberType === "vip" ? 0.92 : 0.90;
             const piMarkup = latestPiToIdr * discount;
 
             document.getElementById("hargaPiMarkup").innerText = piMarkup.toLocaleString("id-ID");
@@ -108,10 +126,10 @@
                     throw new Error("Harga Pi tidak ditemukan.");
                 }
 
-                return parseFloat(data.data[0].last);
+                return parseFloat(data.data[0].last); 
             } catch (error) {
                 console.error('Error mengambil harga Pi:', error);
-                return defaultPiPrice; // Gunakan default jika gagal
+                return null;
             }
         }
 
@@ -127,11 +145,11 @@
                 }
             } catch (error) {
                 console.error('Error mengambil kurs USD ke IDR:', error);
-                return defaultUsdToIdr; // Gunakan default jika gagal
+                return null;
             }
         }
 
-        function convert() {
+        async function convert() {
             const rupiah = parseFloat(document.getElementById("rupiah").value);
 
             if (isNaN(rupiah) || rupiah <= 0) {
@@ -147,7 +165,7 @@
                 }
 
                 const memberType = document.querySelector('input[name="member"]:checked').value;
-                const discount = memberType === "vip" ? 0.92 : 0.90; // VIP -8%, Reguler -10%
+                const discount = memberType === "vip" ? 0.92 : 0.90;
                 const piMarkup = latestPiToIdr * discount;
                 const piAmount = rupiah / piMarkup;
 
