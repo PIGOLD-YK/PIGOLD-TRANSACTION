@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIGOLD TRANSACTION CONVERTER</title>
+    <title>PIGOLD TRANSACTION CONVERTER 2</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 50px;
             background-color: #FFD700; /* Warna emas */
-             }
+        }
         input, button { 
             padding: 10px;
             margin: 10px;
@@ -20,8 +20,13 @@
             font-size: 16px;
             margin-top: 10px;
         }
-        .logo {margin-top: 4px; }
-        .logo img { width: 100px; hight: auto; }
+        .logo {
+            margin-top: 4px;
+        }
+        .logo img {
+            width: 100px;
+            height: auto;
+        }
     </style>
 </head>
 <body>
@@ -32,27 +37,32 @@
     <h2>By PI-DAY GROUP</h2>
     <strong>_____________________________________</strong>
     
-        <input type="radio" id="reguler" name="member" value="reguler" checked>
-        <label for="reguler"><strong>REGULER</strong></label>
-        
-        <input type="radio" id="vip" name="member" value="vip">
-        <label for="vip"><strong>VIP MEMBER</strong></label>
+    <input type="radio" id="reguler" name="member" value="reguler" checked>
+    <label for="reguler"><strong>REGULER</strong></label>
+    
+    <input type="radio" id="vip" name="member" value="vip">
+    <label for="vip"><strong>VIP MEMBER</strong></label>
     
     <strong>_____________________________________</strong>
     <p><strong> [OKX] 1 Pi : Rp. </strong> <span id="hargaPi">Memuat...</span></p>
-    <strong> [PI-DAY] 1 Pi : Rp. </strong> <span id="hargaPiMarkup">Memuat...</span>
+    <p><strong> [PI-DAY] 1 Pi : Rp. </strong> <span id="hargaPiMarkup">Memuat...</span></p>
     <strong>_____________________________________</strong>
+    
     <p><strong>Harga (Rp):</strong></p>
     <input type="number" id="rupiah" placeholder="Masukkan harga transaksi">
     <button id="convertBtn">Konversi</button>        
+    
     <p><strong>Harga (Pi) :</strong></p>
     <h1><p id="result"></p></h1>
+    
     <strong>_____________________________________</strong>
     <i>Nilai realtime berdasar OKX</i>
-    <i>Terimakasih</i>
-    
+    <i>Terima kasih</i>
+
     <script>
         let latestPiToIdr = null; // Menyimpan harga terakhir agar tetap bisa digunakan jika API gagal
+        const defaultPiPrice = 0.3; // Default jika API gagal
+        const defaultUsdToIdr = 16000; // Default kurs USD ke IDR jika API gagal
 
         document.addEventListener("DOMContentLoaded", function() {
             fetchPrices();
@@ -67,11 +77,7 @@
                 const piPrice = await getPiPrice();
                 const usdToIdr = await getUsdToIdrRate();
 
-                if (!piPrice || !usdToIdr) {
-                    throw new Error("Gagal memuat data harga.");
-                }
-
-                const piToIdr = piPrice * usdToIdr;
+                const piToIdr = (piPrice || defaultPiPrice) * (usdToIdr || defaultUsdToIdr);
                 latestPiToIdr = piToIdr; // Simpan harga terakhir yang berhasil dimuat
                 document.getElementById("hargaPi").innerText = piToIdr.toLocaleString("id-ID");
 
@@ -102,10 +108,10 @@
                     throw new Error("Harga Pi tidak ditemukan.");
                 }
 
-                return parseFloat(data.data[0].last); 
+                return parseFloat(data.data[0].last);
             } catch (error) {
                 console.error('Error mengambil harga Pi:', error);
-                return null;
+                return defaultPiPrice; // Gunakan default jika gagal
             }
         }
 
@@ -121,11 +127,11 @@
                 }
             } catch (error) {
                 console.error('Error mengambil kurs USD ke IDR:', error);
-                return null;
+                return defaultUsdToIdr; // Gunakan default jika gagal
             }
         }
 
-        async function convert() {
+        function convert() {
             const rupiah = parseFloat(document.getElementById("rupiah").value);
 
             if (isNaN(rupiah) || rupiah <= 0) {
